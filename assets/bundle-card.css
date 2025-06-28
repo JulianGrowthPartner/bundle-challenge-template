@@ -1,0 +1,43 @@
+.bundle-card-block {
+    margin-top: 2rem;
+}
+
+.bundle-card {
+  border: 1px solid #e0e0e0;
+  padding: 16px;
+  border-radius: 8px;
+  background: white;
+}
+
+.variant-selectors {
+  margin-top: 12px;
+}
+
+select {
+  display: block;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+}
+
+.swatch-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background-color: currentColor;
+  cursor: pointer;
+}
+
+.swatch[data-value="Black"] { color: #000; }
+.swatch[data-value="Gray"] { color: #888; }
+.swatch[data-value="White"] { color: #eee; }
+
+.swatch.selected {
+  outline: 2px solid #000;
+}
