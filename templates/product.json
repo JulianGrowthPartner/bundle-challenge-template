@@ -45,6 +45,10 @@
             "show_gift_card_recipient": true
           }
         },
+        "bundle_card_XJYatz": {
+          "type": "bundle_card",
+          "settings": {}
+        },
         "description": {
           "type": "description",
           "settings": {}
@@ -63,6 +67,7 @@
         "variant_picker",
         "quantity_selector",
         "buy_buttons",
+        "bundle_card_XJYatz",
         "description",
         "share"
       ],
