@@ -471,19 +471,6 @@
                   section_id: section.id,
                   show_pickup_availability: true
                 -%}
-              {%- when 'bundle_card' -%}
-                  <div
-                    id="bundle-card-container"
-                    class="bundle-card-block quick-add-hidden"
-                    data-product-id="{{ product.selected_or_first_available_variant.id }}"
-                    data-bundle-handle="{{ product.metafields.custom.bundle_product.handle }}"
-                    {{ block.shopify_attributes }}
-                  >
-                    <bundle-card></bundle-card>
-                  </div>
-
-                  <script type="module" src="{{ 'bundle-card.js' | asset_url }}"></script>
-                  <link rel="stylesheet" href="{{ 'bundle-card.css' | asset_url }}">
               {%- when 'rating' -%}
                 {%- if product.metafields.reviews.rating.value != blank -%}
                   <div class="rating-wrapper">
@@ -926,12 +913,6 @@
           "info": "t:sections.main-product.blocks.buy_buttons.settings.show_gift_card_recipient.info"
         }
       ]
-    },
-    {
-      "type": "bundle_card",
-      "name": "Bundle product",
-      "limit": 1,
-      "settings": []
     },
     {
       "type": "description",

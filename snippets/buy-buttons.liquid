@@ -149,3 +149,19 @@
     <script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
 </div>
+
+
+{%- assign bundle_product = product.metafields.custom.bundle_product -%}
+
+{% if bundle_product != blank %}
+  <div
+    id="bundle-card-container"
+    data-main-variant-id="{{ product.selected_or_first_available_variant.id }}"
+    data-bundle-handle="{{ bundle_product.handle }}"
+  >
+    <bundle-card></bundle-card>
+  </div>
+
+  <script type="module" src="{{ 'bundle-card.js' | asset_url }}"></script>
+  <link rel="stylesheet" href="{{ 'bundle-card.css' | asset_url }}">
+{% endif %}
