@@ -45,9 +45,11 @@
             "show_gift_card_recipient": true
           }
         },
-        "bundle_card_XJYatz": {
-          "type": "bundle_card",
-          "settings": {}
+        "custom_liquid_pknd8x": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "<script type=\"module\">\n  document.addEventListener(\"DOMContentLoaded\", async () => {\n    const productHandle = \"{{ product.handle }}\";\n    const bundleMetafield = {{ product.metafields.custom.bundle_product | json }};\n\n    // Solo mostrar el bundle si hay producto asociado\n    if (bundleMetafield && bundleMetafield.value) {\n      const bundleHandle = bundleMetafield.value;\n\n      const bundleHTML = `\n        <div id=\"bundle-offer\" style=\"margin-top: 2rem;\">\n          <h3 style=\"font-weight:bold;\">💥 Buy together & save 10%!</h3>\n          <p>Add this product with:</p>\n\n          <shopify-context type=\"product\" handle=\"${bundleHandle}\">\n            <template>\n              <div class=\"product-card__container\">\n                <div class=\"product-card__media\">\n                  <div class=\"product-card__main-image\">\n                    <shopify-media width=\"280\" height=\"280\" query=\"product.selectedOrFirstAvailableVariant.image\"></shopify-media>\n                  </div>\n                </div>\n                <div class=\"product-card__details\">\n                  <h2 class=\"product-card__title\">\n                    <shopify-data query=\"product.title\"></shopify-data>\n                  </h2>\n                  <div class=\"product-card__price\">\n                    <shopify-money query=\"product.selectedOrFirstAvailableVariant.price\"></shopify-money>\n                  </div>\n                  <button \n                    onclick=\"window.addBundleToCart('${productHandle}', '${bundleHandle}')\"\n                    class=\"product-card__view-button\"\n                  >\n                    Add both & get 10% OFF\n                  </button>\n                </div>\n              </div>\n            </template>\n          </shopify-context>\n        </div>\n      `;\n\n      // Insert below Add to Cart\n      const addToCartButton = document.querySelector('form[action*=\"/cart/add\"]');\n      addToCartButton.insertAdjacentHTML(\"afterend\", bundleHTML);\n    }\n  });\n\n  window.addBundleToCart = async (mainHandle, bundleHandle) => {\n    const response = await fetch(`/products/${mainHandle}.js`);\n    const mainData = await response.json();\n\n    const response2 = await fetch(`/products/${bundleHandle}.js`);\n    const bundleData = await response2.json();\n\n    const mainId = mainData.variants[0].id;\n    const bundleId = bundleData.variants[0].id;\n\n    await fetch('/cart/add.js', {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({\n        items: [\n          { id: mainId, quantity: 1, properties: { _bundle: 'true' } },\n          { id: bundleId, quantity: 1, properties: { _bundle: 'true' } }\n        ]\n      })\n    });\n\n    window.location.href = \"/cart\";\n  };\n</script>"
+          }
         },
         "description": {
           "type": "description",
@@ -67,7 +69,7 @@
         "variant_picker",
         "quantity_selector",
         "buy_buttons",
-        "bundle_card_XJYatz",
+        "custom_liquid_pknd8x",
         "description",
         "share"
       ],
