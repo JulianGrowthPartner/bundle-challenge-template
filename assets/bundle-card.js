@@ -17,26 +17,114 @@ class BundleCard extends HTMLElement {
   render(bundleData) {
     this.shadowRoot.innerHTML = `
       <style>
-        .bundle-card { font-family: sans-serif; padding: 1rem; border: 1px solid #eee; border-radius: 8px; }
-        .swiper-container img { width: 100px; height: auto; }
-        .variants select { margin: 0.5rem 0; display: block; }
-        button.bundle-add { background: #000; color: #fff; padding: 0.5rem 1rem; border: none; cursor: pointer; }
+        :host {
+          display: block;
+          margin-top: 2rem;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .bundle-wrapper {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5rem;
+          align-items: start;
+          border: 1px solid #e5e5e5;
+          border-radius: 12px;
+          padding: 1.5rem;
+          background: #fff;
+        }
+        .bundle-title {
+          grid-column: span 2;
+          font-size: 1.25rem;
+          font-weight: bold;
+          margin-bottom: 1rem;
+        }
+        .swiper-container {
+          width: 100%;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          overflow: hidden;
+        }
+        .swiper-slide img {
+          width: 100%;
+          display: block;
+        }
+        .bundle-info h3 {
+          font-size: 1.25rem;
+          margin: 0 0 0.5rem 0;
+        }
+        .price {
+          font-size: 1.1rem;
+          margin-bottom: 1rem;
+        }
+        .price .compare {
+          text-decoration: line-through;
+          color: #999;
+          margin-left: 0.5rem;
+        }
+        .options label {
+          font-weight: 500;
+          margin-top: 0.5rem;
+          display: block;
+        }
+        .swatch-group,
+        .option-group {
+          display: flex;
+          gap: 0.5rem;
+          margin: 0.5rem 0 1rem;
+        }
+        .swatch {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          border: 1px solid #ccc;
+          cursor: pointer;
+        }
+        .option-button {
+          padding: 0.5rem 0.75rem;
+          border: 1px solid #ccc;
+          background: #fff;
+          cursor: pointer;
+          border-radius: 6px;
+        }
+        button.bundle-add {
+          grid-column: span 2;
+          background: #000;
+          color: #fff;
+          padding: 0.75rem;
+          border: none;
+          border-radius: 6px;
+          font-size: 1rem;
+          cursor: pointer;
+        }
       </style>
-      <div class="bundle-card">
+      <div class="bundle-wrapper">
+        <div class="bundle-title">Best Paired with</div>
         <div class="swiper-container">
           <div class="swiper-wrapper">
             ${bundleData.images.map(img => `<div class="swiper-slide"><img src="${img}" /></div>`).join('')}
           </div>
+          <div class="swiper-button-prev"></div>
+          <div class="swiper-button-next"></div>
         </div>
-        <div class="variants">
-          ${bundleData.options.map(option => `
-            <label>${option.name}</label>
-            <select name="${option.name}">
-              ${option.values.map(value => `<option value="${value}">${value}</option>`).join('')}
-            </select>
-          `).join('')}
+        <div class="bundle-info">
+          <h3>${bundleData.title}</h3>
+          <div class="price">$18 <span class="compare">$20</span></div>
+          <div class="options">
+            ${bundleData.options.map(option => {
+              const isColor = option.name.toLowerCase() === 'color';
+              return `
+                <label>${option.name}</label>
+                <div class="${isColor ? 'swatch-group' : 'option-group'}">
+                  ${option.values.map(value => isColor
+                    ? `<div class="swatch" style="background-color: ${value};" title="${value}"></div>`
+                    : `<div class="option-button">${value}</div>`
+                  ).join('')}
+                </div>
+              `;
+            }).join('')}
+          </div>
         </div>
-        <button class="bundle-add">Add both to cart</button>
+        <button class="bundle-add">Add to Cart</button>
       </div>
     `;
   }
@@ -44,16 +132,20 @@ class BundleCard extends HTMLElement {
   setupSwiper() {
     new Swiper(this.shadowRoot.querySelector('.swiper-container'), {
       slidesPerView: 1,
-      loop: true
+      navigation: {
+        nextEl: this.shadowRoot.querySelector('.swiper-button-next'),
+        prevEl: this.shadowRoot.querySelector('.swiper-button-prev'),
+      },
+      loop: true,
     });
   }
 
   bindVariantSelectors(bundleData) {
-    // Add swatch logic or listeners here if needed
+    // TODO: bind to swatches and option buttons
   }
 
   checkStock(bundleData) {
-    // Implement stock checking based on selected variant
+    // TODO: Check selected variant stock and disable button if out of stock
   }
 
   bindAddToCart(bundleData) {
