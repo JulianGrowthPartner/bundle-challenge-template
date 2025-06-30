@@ -15,6 +15,7 @@ class BundleCard extends HTMLElement {
     this.setupSwiper();
     this.bindVariantSelectors(bundleData);
     this.updateSelectedVariantId();
+    this.bindAddToCart();
   }
 
   render(bundleData) {
