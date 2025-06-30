@@ -120,7 +120,7 @@ class BundleCard extends HTMLElement {
               const isColor = option.name.toLowerCase() === 'color';
               return `
                 <label>${option.name}</label>
-                <div class="${isColor ? 'swatch-group' : 'option-group'}" data-option-name="${option.name}">
+                <div class="${isColor ? 'swatch-group' : 'option-group'}" data-option-name="${option.name}" data-option-index="${bundleData.options.indexOf(option)}">
                   ${option.values.map(value => isColor
                     ? `<div class="swatch" style="background-color: ${value};" title="${value}" data-value="${value}"></div>`
                     : `<div class="option-button" data-value="${value}">${value}</div>`
@@ -149,15 +149,14 @@ class BundleCard extends HTMLElement {
   bindVariantSelectors(bundleData) {
     const optionGroups = this.shadowRoot.querySelectorAll('[data-option-name]');
 
-    optionGroups.forEach(group => {
-      const name = group.getAttribute('data-option-name');
+    optionGroups.forEach((group, index) => {
       const buttons = group.querySelectorAll('[data-value]');
 
       buttons.forEach(btn => {
         btn.addEventListener('click', () => {
           buttons.forEach(b => b.classList.remove('selected'));
           btn.classList.add('selected');
-          this.selectedOptions[name] = btn.getAttribute('data-value');
+          this.selectedOptions[index] = btn.getAttribute('data-value');
           this.updateSelectedVariantId();
         });
       });
@@ -165,15 +164,13 @@ class BundleCard extends HTMLElement {
   }
 
   updateSelectedVariantId() {
-    const selected = Object.entries(this.selectedOptions);
-    const match = this.bundleData.variants.find(v => {
-      return selected.every(([name, value]) => {
-        return v.options[name] === value;
-      });
+    const selected = this.selectedOptions;
+    const variantMatch = this.variants.find(v => {
+      return v.options.every((opt, i) => selected[i] === opt);
     });
 
-    if (match) {
-      this.selectedVariantId = match.id;
+    if (variantMatch) {
+      this.selectedVariantId = variantMatch.id;
     } else {
       this.selectedVariantId = this.bundleData.default_variant_id;
     }
