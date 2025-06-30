@@ -3,15 +3,18 @@ class BundleCard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this.selectedOptions = {}; // Store selected options
   }
 
   connectedCallback() {
     const bundleData = JSON.parse(this.dataset.bundle);
+    this.bundleData = bundleData;
+    this.variants = bundleData.variants || [];
     this.render(bundleData);
     this.setupSwiper();
     this.bindVariantSelectors(bundleData);
-    this.checkStock(bundleData);
-    this.bindAddToCart(bundleData);
+    this.checkStock();
+    this.bindAddToCart();
   }
 
   render(bundleData) {
@@ -72,19 +75,22 @@ class BundleCard extends HTMLElement {
           gap: 0.5rem;
           margin: 0.5rem 0 1rem;
         }
+        .swatch, .option-button {
+          border: 1px solid #ccc;
+          cursor: pointer;
+        }
         .swatch {
           width: 24px;
           height: 24px;
           border-radius: 50%;
-          border: 1px solid #ccc;
-          cursor: pointer;
         }
         .option-button {
           padding: 0.5rem 0.75rem;
-          border: 1px solid #ccc;
           background: #fff;
-          cursor: pointer;
           border-radius: 6px;
+        }
+        .selected {
+          outline: 2px solid #000;
         }
         button.bundle-add {
           grid-column: span 2;
@@ -114,10 +120,10 @@ class BundleCard extends HTMLElement {
               const isColor = option.name.toLowerCase() === 'color';
               return `
                 <label>${option.name}</label>
-                <div class="${isColor ? 'swatch-group' : 'option-group'}">
+                <div class="${isColor ? 'swatch-group' : 'option-group'}" data-option-name="${option.name}">
                   ${option.values.map(value => isColor
-                    ? `<div class="swatch" style="background-color: ${value};" title="${value}"></div>`
-                    : `<div class="option-button">${value}</div>`
+                    ? `<div class="swatch" style="background-color: ${value};" title="${value}" data-value="${value}"></div>`
+                    : `<div class="option-button" data-value="${value}">${value}</div>`
                   ).join('')}
                 </div>
               `;
@@ -141,17 +147,46 @@ class BundleCard extends HTMLElement {
   }
 
   bindVariantSelectors(bundleData) {
-    // TODO: bind to swatches and option buttons
+    const optionGroups = this.shadowRoot.querySelectorAll('[data-option-name]');
+
+    optionGroups.forEach(group => {
+      const name = group.getAttribute('data-option-name');
+      const buttons = group.querySelectorAll('[data-value]');
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          this.selectedOptions[name] = btn.getAttribute('data-value');
+          this.updateSelectedVariantId();
+        });
+      });
+    });
   }
 
-  checkStock(bundleData) {
-    // TODO: Check selected variant stock and disable button if out of stock
+  updateSelectedVariantId() {
+    const selected = Object.entries(this.selectedOptions);
+    const match = this.bundleData.variants.find(v => {
+      return selected.every(([name, value]) => {
+        return v.options[name] === value;
+      });
+    });
+
+    if (match) {
+      this.selectedVariantId = match.id;
+    } else {
+      this.selectedVariantId = this.bundleData.default_variant_id;
+    }
   }
 
-  bindAddToCart(bundleData) {
+  checkStock() {
+    // TODO: Check selected variant stock
+  }
+
+  bindAddToCart() {
     this.shadowRoot.querySelector('.bundle-add').addEventListener('click', async () => {
       const variantIdMain = this.dataset.mainVariantId;
-      const variantIdBundle = bundleData.default_variant_id;
+      const variantIdBundle = this.selectedVariantId || this.bundleData.default_variant_id;
 
       await fetch('/cart/add.js', {
         method: 'POST',
