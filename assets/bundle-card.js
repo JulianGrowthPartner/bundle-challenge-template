@@ -200,7 +200,9 @@ class BundleCard extends HTMLElement {
 
   bindAddToCart() {
     this.shadowRoot.querySelector('.bundle-add').addEventListener('click', async () => {
-      const variantIdMain = document.querySelector('input[name="id"]')?.value;
+      const form = document.querySelector('form[action^="/cart/add"]');
+      const formData = new FormData(form);
+      const variantIdMain = formData.get('id');
       const variantIdBundle = this.selectedVariantId || this.bundleData.default_variant_id;
 
       if (!variantIdMain) return;
