@@ -470,6 +470,30 @@
                   section_id: section.id,
                   show_pickup_availability: true
                 -%}
+                {%- if product.metafields.custom.bundle_product -%}
+                  {%- assign bundle_product = product.metafields.custom.bundle_product.value -%}
+                  <bundle-card
+                    data-main-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                    data-bundle='{
+                      "id": "{{ bundle_product.id }}",
+                      "title": "{{ bundle_product.title }}",
+                      "images": [
+                        {% for image in bundle_product.images %}
+                          "{{ image | img_url: 'medium' }}"{% unless forloop.last %},{% endunless %}
+                        {% endfor %}
+                      ],
+                      "options": [
+                        {% for option in bundle_product.options_with_values %}
+                          {
+                            "name": "{{ option.name }}",
+                            "values": [{% for value in option.values %}"{{ value }}"{% unless forloop.last %},{% endunless %}{% endfor %}]
+                          }{% unless forloop.last %},{% endunless %}
+                        {% endfor %}
+                      ],
+                      "default_variant_id": "{{ bundle_product.variants.first.id }}"
+                    }'
+                  ></bundle-card>
+                {%- endif -%}
               {%- when 'rating' -%}
                 {%- if product.metafields.reviews.rating.value != blank -%}
                   <div class="rating-wrapper">
