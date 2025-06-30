@@ -4,6 +4,7 @@ class BundleCard extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
     this.selectedOptions = {}; // Store selected options
+    this.swiper = null;
   }
 
   connectedCallback() {
@@ -13,8 +14,7 @@ class BundleCard extends HTMLElement {
     this.render(bundleData);
     this.setupSwiper();
     this.bindVariantSelectors(bundleData);
-    this.checkStock();
-    this.bindAddToCart();
+    this.updateSelectedVariantId();
   }
 
   render(bundleData) {
@@ -46,6 +46,13 @@ class BundleCard extends HTMLElement {
           border: 1px solid #ccc;
           border-radius: 8px;
           overflow: hidden;
+        }
+        .swiper-wrapper {
+          display: flex;
+        }
+        .swiper-slide {
+          flex-shrink: 0;
+          width: 100%;
         }
         .swiper-slide img {
           width: 100%;
@@ -102,6 +109,10 @@ class BundleCard extends HTMLElement {
           font-size: 1rem;
           cursor: pointer;
         }
+        button.bundle-add:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
       </style>
       <div class="bundle-wrapper">
         <div class="bundle-title">Best Paired with</div>
@@ -130,13 +141,13 @@ class BundleCard extends HTMLElement {
             }).join('')}
           </div>
         </div>
-        <button class="bundle-add">Add to Cart</button>
+        <button class="bundle-add">Add both to cart</button>
       </div>
     `;
   }
 
   setupSwiper() {
-    new Swiper(this.shadowRoot.querySelector('.swiper-container'), {
+    this.swiper = new Swiper(this.shadowRoot.querySelector('.swiper-container'), {
       slidesPerView: 1,
       navigation: {
         nextEl: this.shadowRoot.querySelector('.swiper-button-next'),
@@ -171,13 +182,20 @@ class BundleCard extends HTMLElement {
 
     if (variantMatch) {
       this.selectedVariantId = variantMatch.id;
+      if (variantMatch.featured_image) {
+        const index = this.bundleData.images.findIndex(img => img === variantMatch.featured_image);
+        if (index >= 0 && this.swiper) this.swiper.slideToLoop(index);
+      }
+      this.setAddToCartAvailability(variantMatch.available);
     } else {
       this.selectedVariantId = this.bundleData.default_variant_id;
+      this.setAddToCartAvailability(true);
     }
   }
 
-  checkStock() {
-    // TODO: Check selected variant stock
+  setAddToCartAvailability(isAvailable) {
+    const button = this.shadowRoot.querySelector('.bundle-add');
+    button.disabled = !isAvailable;
   }
 
   bindAddToCart() {
