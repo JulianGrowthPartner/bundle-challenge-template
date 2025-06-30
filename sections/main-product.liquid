@@ -474,7 +474,6 @@
                 -%}
                 {%- if product.metafields.custom.bundle_product -%}
                   {%- assign bundle_product = product.metafields.custom.bundle_product.value -%}
-                  <script type="module" src="{{ 'bundle-card.js' | asset_url }}"></script>
                   <bundle-card
                     data-main-variant-id="{{ product.selected_or_first_available_variant.id }}"
                     data-bundle='{
