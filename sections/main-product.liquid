@@ -498,7 +498,9 @@
                         {% for variant in bundle_product.variants %}
                           {
                             "id": "{{ variant.id }}",
-                            "options": [{% for opt in variant.options %}"{{ opt }}"{% unless forloop.last %},{% endunless %}{% endfor %}]
+                            "options": [{% for opt in variant.options %}"{{ opt }}"{% unless forloop.last %},{% endunless %}{% endfor %}],
+                            "available": {{ variant.available | json }},
+                            "featured_image": {% if variant.featured_image %}"{{ variant.featured_image | img_url: 'medium' }}"{% else %}null{% endif %}
                           }{% unless forloop.last %},{% endunless %}
                         {% endfor %}
                       ]
