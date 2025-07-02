@@ -175,25 +175,6 @@ class BundleCard extends HTMLElement {
     });
   }
 
-  // updateSelectedVariantId() {
-  //   const selected = this.selectedOptions;
-  //   const variantMatch = this.variants.find(v => {
-  //     return v.options.every((opt, i) => selected[i] === opt);
-  //   });
-
-  //   if (variantMatch) {
-  //     this.selectedVariantId = variantMatch.id;
-  //     if (variantMatch.featured_image) {
-  //       const index = this.bundleData.images.findIndex(img => img === variantMatch.featured_image);
-  //       if (index >= 0 && this.swiper) this.swiper.slideToLoop(index);
-  //     }
-  //     this.setAddToCartAvailability(variantMatch.available);
-  //   } else {
-  //     this.selectedVariantId = this.bundleData.default_variant_id;
-  //     this.setAddToCartAvailability(true);
-  //   }
-  // }
-
   updateSelectedVariantId() {
     const selected = this.selectedOptions;
     const variantMatch = this.variants.find(v => {
@@ -202,25 +183,14 @@ class BundleCard extends HTMLElement {
 
     if (variantMatch) {
       this.selectedVariantId = variantMatch.id;
-
-      // 🔁 Actualizar imagen del slide
       if (variantMatch.featured_image) {
         const index = this.bundleData.images.findIndex(img => img === variantMatch.featured_image);
         if (index >= 0 && this.swiper) this.swiper.slideToLoop(index);
       }
-
-      // ✅ Actualizar precio
-      const priceEl = this.shadowRoot.querySelector('.price');
-      if (priceEl) {
-        const price = parseFloat(variantMatch.price);
-        const compare = parseFloat(variantMatch.compare_at_price || 0);
-
-        priceEl.innerHTML = `$${(price * 0.9).toFixed(2)}${
-          compare ? ` <span class="compare">$${compare.toFixed(2)}</span>` : ''
-        }`;
-      }
-
       this.setAddToCartAvailability(variantMatch.available);
+    } else {
+      this.selectedVariantId = this.bundleData.default_variant_id;
+      this.setAddToCartAvailability(true);
     }
   }
 
