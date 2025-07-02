@@ -126,7 +126,7 @@ class BundleCard extends HTMLElement {
         </div>
         <div class="bundle-info">
           <h3>${bundleData.title}</h3>
-          <div class="price">$18 <span class="compare">$20</span></div>
+          <div class="price">${bundleData.price}</div>
           <div class="options">
             ${bundleData.options.map(option => {
               const isColor = option.name.toLowerCase() === 'color';
@@ -213,8 +213,20 @@ class BundleCard extends HTMLElement {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: [
-            { id: variantIdMain, quantity: 1 },
-            { id: variantIdBundle, quantity: 1 }
+            {
+              id: variantIdMain,
+              quantity: 1,
+              properties: {
+                _bundle: 'true'
+              }
+            },
+            {
+              id: variantIdBundle,
+              quantity: 1,
+              properties: {
+                _bundle: 'true'
+              }
+            }
           ]
         })
       });
